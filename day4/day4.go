@@ -10,9 +10,10 @@ import (
 )
 
 var XMAS = []rune{'X', 'M', 'A', 'S'}
+var MAS = XMAS[1:]
 
 func readFile() []string {
-	file, err := os.Open("./test_input.txt")
+	file, err := os.Open("./input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +31,7 @@ func inBounds(grid []string, row int, col int) bool {
 	return row < len(grid) && row >= 0 && col < utf8.RuneCountInString(grid[row]) && col >= 0
 }
 
-func searchDirections(grid []string, row int, col int) int {
+func searchDirectionsXMAS(grid []string, row int, col int) int {
 	// 1. Allocate slices for directions
 
 	up := make([]rune, 0)
@@ -96,6 +97,27 @@ func searchDirections(grid []string, row int, col int) int {
 	return internal.CountEntries(trie, XMAS)
 }
 
+func searchDirectionsX_MAS(grid []string, row int, col int) int {
+	valid := inBounds(grid, row - 1, col - 1) &&
+		inBounds(grid, row - 1, col + 1) &&
+		inBounds(grid, row + 1, col + 1) &&
+		inBounds(grid, row + 1, col - 1)
+	
+	if !valid {
+		return 0
+	}
+
+	count := 0
+
+
+	if ((grid[row - 1][col - 1] == 'M' && grid[row + 1][col + 1] == 'S') || (grid[row - 1][col - 1] == 'S' && grid[row + 1][col + 1] == 'M')) &&
+		((grid[row - 1][col + 1] == 'M' && grid[row + 1][col - 1] == 'S') || (grid[row - 1][col + 1] == 'S' && grid[row + 1][col - 1] == 'M')) {
+		count++
+	}
+	
+	return count
+}
+
 func main() {
 	lines := readFile()
 
@@ -105,16 +127,24 @@ func main() {
 		for row, s := range lines {
 			for col, c := range s {
 				if c == 'X' {
-					totalXMAS += searchDirections(lines, row, col)
+					totalXMAS += searchDirectionsXMAS(lines, row, col)
 				}
 			}
 		}
 		return totalXMAS
 	}
 
-	// part2 := func() int {
-	// 	return 0
-	// }
+	part2 := func() int {
+		totalX_MAS := 0
+		for row, s := range lines {
+			for col, c := range s {
+				if c == 'A' {
+					totalX_MAS += searchDirectionsX_MAS(lines, row, col)
+				}
+			}
+		}
+		return totalX_MAS
+	}
 
-	fmt.Printf("Part1=%d\nPart2=%d\n", part1(), XMAS[1])
+	fmt.Printf("Part1=%d\nPart2=%d\n", part1(), part2())
 }
