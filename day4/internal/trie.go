@@ -23,8 +23,9 @@ func Insert(t *trie, key []rune) {
 		if curr.children[c] == nil {
 			curr.children[c] = &trienode{data: c, children: make(map[rune]*trienode)}
 		}
-		curr.visited++
 		curr = curr.children[c]
+		// // remember that curr is always 1 position behind the index of the string
+		curr.visited++
 	}
 }
 
@@ -36,8 +37,10 @@ func CountEntries(t *trie, key []rune) int {
 			res = 0
 			break
 		}
-		res = curr.visited
+		
 		curr = curr.children[c]
+		// remember that curr is always 1 position behind the index of the string
+		res = curr.visited
 	}
 	return res
 }
